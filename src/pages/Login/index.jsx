@@ -6,7 +6,6 @@ import api from '../../services/api';
 const index = () => {
     const emailRef = useRef();
     const passwordRef = useRef();
-    const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -17,7 +16,6 @@ const index = () => {
                 password: passwordRef.current.value,
             });
             localStorage.setItem('token', token);
-            navigate('/admin');
             window.location.reload();
         } catch (err) {
             console.log(err);
