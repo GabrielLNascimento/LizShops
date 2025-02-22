@@ -15,7 +15,7 @@ const Produtos = () => {
             }
 
             try {
-                const response = await fetch('http://localhost:3000/products', {
+                const response = await fetch('https://api-liz-shops.vercel.app/products', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
