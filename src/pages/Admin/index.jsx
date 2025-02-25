@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
@@ -24,25 +24,42 @@ const Index = () => {
             return;
         }
 
-        const formData = new FormData();
-        formData.append('name', nameRef.current.value);
-        formData.append('price', priceRef.current.value);
-        formData.append('image', imageRef.current.files[0]);
+        // Coleta os valores do formulário
+        const nome = nameRef.current.value;
+        const preco = parseFloat(priceRef.current.value); // Converte para número
+        const urlImagem = imageRef.current.value;
+
+        // Cria o payload em JSON
+        const payload = {
+            nome,
+            preco,
+            urlImagem,
+        };
 
         try {
-            const response = await fetch('https://api-liz-shops-o13z.vercel.app/products', {
+            const response = await fetch('https://api-products-mu.vercel.app/api/produtos', {
                 method: 'POST',
-                body: formData,
                 headers: {
+                    'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`, // Envia o token JWT
                 },
+                body: JSON.stringify(payload),
             });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(
+                    errorData.message || 'Erro ao cadastrar o produto'
+                );
+            }
 
             const data = await response.json();
             console.log('Produto cadastrado:', data);
             alert('Produto cadastrado com sucesso!');
+            // Opcional: limpar os campos ou redirecionar
         } catch (error) {
             console.error('Erro ao enviar produto:', error);
+            alert(`Erro: ${error.message}`);
         }
     };
 
@@ -64,6 +81,7 @@ const Index = () => {
                         placeholder="Digite o nome do produto"
                         className="border border-gray-500 rounded-md shadow-md py-2 px-4"
                         ref={nameRef}
+                        id="name"
                     />
                 </div>
 
@@ -75,10 +93,12 @@ const Index = () => {
                         Preço do produto
                     </label>
                     <input
-                        type="text"
+                        type="number"
+                        step="0.01"
                         placeholder="Digite o preço do produto"
                         className="border border-gray-500 rounded-md shadow-md py-2 px-4"
                         ref={priceRef}
+                        id="price"
                     />
                 </div>
 
@@ -90,9 +110,11 @@ const Index = () => {
                         Imagem do produto
                     </label>
                     <input
-                        type="file"
+                        type="text"
+                        placeholder="Digite a URL da imagem"
                         className="border border-gray-500 rounded-md shadow-md py-2 px-4"
                         ref={imageRef}
+                        id="image"
                     />
                 </div>
 
