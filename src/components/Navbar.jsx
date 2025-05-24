@@ -1,49 +1,70 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import LogoutButton from './LogoutButton';
+import { auth } from '../assets/firebase';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 const Navbar = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
-        // Verifica se o token existe no localStorage
-        const token = localStorage.getItem('token');
-        setIsAuthenticated(!!token);
+        const unsub = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+        });
+
+        return () => unsub();
     }, []);
 
-    return (
-        <nav className="bg-gray-800 text-white p-4 flex items-center justify-between">
-            {/* Nome do site alinhado à esquerda */}
-            <h1 className="text-xl font-bold">Liz's Shops</h1>
+    const handleLogout = async () => {
+        await signOut(auth);
+    };
 
-            <div className="flex gap-4">
-                {/* Home centralizado no eixo Y */}
-                <div className="flex-1 text-center flex items-center">
-                    <Link to="/" className="hover:underline text-lg">
+    return (
+        <nav className="p-3 bg-slate-700 flex text-white justify-between">
+            <div>
+                <span className="font-bold text-2xl cursor-pointer">
+                    Liz Shops
+                </span>
+            </div>
+
+            <div className="flex gap-5">
+                {user && (
+                    <Link to="/" className="hover:underline self-center">
                         Home
                     </Link>
-                </div>
+                )}
 
-                {/* Botões à direita */}
-                <div className="flex gap-4 items-center">
-                    {isAuthenticated ? (
-                        <>
-                            <Link to="/admin" className="hover:underline text-lg">
-                                Dashboard
-                            </Link>
-                            <LogoutButton />
-                        </>
-                    ) : (
-                        <>
-                            <Link to="/login" className="hover:underline">
-                                Login
-                            </Link>
-                            <Link to="/cadastro" className="hover:underline">
-                                Cadastro
-                            </Link>
-                        </>
-                    )}
-                </div>
+                {user && (
+                    <Link
+                        to="/dashboard"
+                        className="hover:underline self-center"
+                    >
+                        Dashboard
+                    </Link>
+                )}
+
+                {!user && (
+                    <Link to="/login" className="hover:underline self-center">
+                        Entrar
+                    </Link>
+                )}
+
+                {!user && (
+                    <Link
+                        to="/register"
+                        className="hover:underline self-center"
+                    >
+                        Registrar
+                    </Link>
+                )}
+
+                {user && (
+                    <button
+                        onClick={handleLogout}
+                        className="bg-red-500 px-3 cursor-pointer"
+                    >
+                        Sair
+                    </button>
+                )}
             </div>
         </nav>
     );

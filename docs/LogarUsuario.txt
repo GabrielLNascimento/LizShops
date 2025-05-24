@@ -1,0 +1,29 @@
+01. ter um formulario de logar
+const [email, setEmail] = useState('');
+const [senha, setSenha] = useState('');
+const navigate = useNavigate();
+
+return
+<div>
+    <h2>Entrar</h2>
+    <input
+        type="email" onChange={(e) => setEmail(e.target.value)}
+    />
+    <input
+        type="password" onChange={(e) => setSenha(e.target.value)}
+    />
+    <button onClick={handleLogin}>Entrar</button>
+</div>
+
+    
+
+
+02. funcao para logar, lógica
+const handleLogin = async () => {
+    try {
+        await signInWithEmailAndPassword(auth, email, senha);
+        navigate('/');
+    } catch (error) {
+        alert('Erro ao entrar: ' + error.message);
+    }
+};

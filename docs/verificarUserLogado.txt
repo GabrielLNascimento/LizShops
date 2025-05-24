@@ -1,0 +1,33 @@
+01. configurar firebase.js
+* dentro do site nas config. </>
+
+import { initializeApp } from 'firebase/app';
+import { getAuth } from "firebase/auth";
+
+const firebaseConfig = {
+    config....
+};
+
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+
+
+02. dentro do arquivo App.jsx, importar:
+import { auth } from './assets/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+
+
+03. criar função no useEffect
+    const [user, setUser] = useState(null);
+    useEffect(() => {
+        const unsub = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+            setLoading(false);
+        });
+
+        return () => unsub();
+    }, []);
+
+Explicação:
+-- se tiver usuario, ele atualiza a variavel user
+-- se nao tiver, mantem como null
